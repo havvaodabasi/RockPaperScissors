@@ -8,14 +8,19 @@
 import SwiftUI
 
 struct ContentView: View {
+    let moves = ["🪨", "📄", "✂️"]
+    
+    @State private var appMove = Int.random(in: 0...2)
+    @State private var shouldWin = Bool.random()
+    @State private var score = 0
+    @State private var round = 1
+        
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            Text("Score: \(score)")
+            Text("App chose: \(moves[appMove])")
+            Text(shouldWin ? "You need to WIN" : "You need to LOSE")
         }
-        .padding()
     }
 }
 
