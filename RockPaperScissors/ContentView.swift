@@ -14,6 +14,7 @@ struct ContentView: View {
     @State private var shouldWin = Bool.random()
     @State private var score = 0
     @State private var round = 1
+    @State private var showingScore = false
         
     var body: some View {
         VStack {
@@ -24,12 +25,17 @@ struct ContentView: View {
         HStack {
             ForEach(0..<3) { number in
                 Button {
-                    // henüz fonksiyon yok
+                    tappedMove(number)
                 } label: {
                     Text(moves[number])
                         .font(.system(size: 60))
                 }
             }
+        }
+        .alert("Game Over", isPresented: $showingScore) {
+            Button("Restart", action: resetGame)
+        } message: {
+            Text("Your final score: \(score)")
         }
     }
     
@@ -40,7 +46,11 @@ struct ContentView: View {
             score -= 1
         }
         
-        nextRound()
+        if round == 10 {
+            showingScore = true
+        } else {
+            nextRound()
+        }
     }
 
     func checkAnswer(_ playerMove: Int) -> Bool {
@@ -56,7 +66,12 @@ struct ContentView: View {
         shouldWin.toggle()
         round += 1
     }
-
+    func resetGame() {
+        score = 0
+        round = 1
+        nextRound()
+        shouldWin = Bool.random()
+    }
 }
 
 
