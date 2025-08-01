@@ -1,10 +1,3 @@
-//
-//  ContentView.swift
-//  RockPaperScissors
-//
-//  Created by Havva Odabaşı on 18.06.2025.
-//
-
 import SwiftUI
 
 struct ContentView: View {
@@ -17,25 +10,72 @@ struct ContentView: View {
     @State private var showingScore = false
         
     var body: some View {
-        VStack {
-            Text("Score: \(score)")
-            Text("App chose: \(moves[appMove])")
-            Text(shouldWin ? "You need to WIN" : "You need to LOSE")
-        }
-        HStack {
-            ForEach(0..<3) { number in
-                Button {
-                    tappedMove(number)
-                } label: {
-                    Text(moves[number])
-                        .font(.system(size: 60))
+        ZStack {
+            LinearGradient(gradient: Gradient(colors: [.indigo, .blue, .mint]), startPoint: .topLeading, endPoint: .bottomTrailing)
+                .ignoresSafeArea()
+
+            VStack(spacing: 30) {
+                Spacer()
+                
+                Text("🧠 Rock Paper Scissors")
+                    .font(.largeTitle.bold())
+                    .foregroundColor(.white)
+                
+                Text("Round \(round) / 10")
+                    .font(.title2)
+                    .foregroundColor(.white.opacity(0.8))
+                
+                VStack(spacing: 10) {
+                    Text("🤖 App chose:")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                    Text(moves[appMove])
+                        .font(.system(size: 100))
+                        .shadow(radius: 10)
                 }
+                .padding()
+                .background(.ultraThinMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 25))
+                
+                VStack {
+                    Text(shouldWin ? "Try to WIN 👊" : "Try to LOSE 🫣")
+                        .font(.title2.bold())
+                        .foregroundColor(.white)
+                }
+                .padding()
+                .background(.ultraThinMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 25))
+                
+                Spacer()
+                
+                HStack(spacing: 30) {
+                    ForEach(0..<3) { number in
+                        Button {
+                            tappedMove(number)
+                        } label: {
+                            Text(moves[number])
+                                .font(.system(size: 60))
+                                .frame(width: 100, height: 100)
+                                .background(Color.white.opacity(0.15))
+                                .clipShape(Circle())
+                                .overlay(Circle().stroke(.white.opacity(0.8), lineWidth: 2))
+                        }
+                    }
+                }
+                
+                Spacer()
+                
+                Text("Score: \(score)")
+                    .font(.title.bold())
+                    .foregroundColor(.white)
+                    .padding(.bottom)
             }
-        }
-        .alert("Game Over", isPresented: $showingScore) {
-            Button("Restart", action: resetGame)
-        } message: {
-            Text("Your final score: \(score)")
+            .padding()
+            .alert("Game Over", isPresented: $showingScore) {
+                Button("Play Again", action: resetGame)
+            } message: {
+                Text("Your final score: \(score)")
+            }
         }
     }
     
@@ -66,15 +106,15 @@ struct ContentView: View {
         shouldWin.toggle()
         round += 1
     }
+
     func resetGame() {
         score = 0
         round = 1
-        nextRound()
+        appMove = Int.random(in: 0...2)
         shouldWin = Bool.random()
+        showingScore = false
     }
 }
-
-
 
 #Preview {
     ContentView()
