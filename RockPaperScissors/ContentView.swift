@@ -1,4 +1,5 @@
 import SwiftUI
+import AVFoundation
 
 struct ContentView: View {
     let moves = ["🪨", "📄", "✂️"]
@@ -8,6 +9,10 @@ struct ContentView: View {
     @State private var score = 0
     @State private var round = 1
     @State private var showingScore = false
+    
+    @State private var selectedMove: Int? = nil
+    @State private var animateCorrect = false
+    @State private var animateWrong = false
         
     var body: some View {
         ZStack {
@@ -59,9 +64,13 @@ struct ContentView: View {
                                 .background(Color.white.opacity(0.15))
                                 .clipShape(Circle())
                                 .overlay(Circle().stroke(.white.opacity(0.8), lineWidth: 2))
+                                .scaleEffect(selectedMove == number && animateCorrect ? 1.4 : 1.0)
+                                .rotationEffect(selectedMove == number && animateWrong ? .degrees(-10) : .degrees(0))
+                                .animation(.easeInOut(duration: 0.2), value: animateCorrect || animateWrong)
                         }
                     }
                 }
+
                 
                 Spacer()
                 
@@ -80,18 +89,32 @@ struct ContentView: View {
     }
     
     func tappedMove(_ playerMove: Int) {
-        if checkAnswer(playerMove) {
+        selectedMove = playerMove
+
+        let isCorrect = checkAnswer(playerMove)
+        
+        if isCorrect {
             score += 1
+            animateCorrect = true
+            playCorrectSound()
         } else {
             score -= 1
+            animateWrong = true
+            playWrongSound()
         }
         
-        if round == 10 {
-            showingScore = true
-        } else {
-            nextRound()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            animateCorrect = false
+            animateWrong = false
+
+            if round == 10 {
+                showingScore = true
+            } else {
+                nextRound()
+            }
         }
     }
+
 
     func checkAnswer(_ playerMove: Int) -> Bool {
         if shouldWin {
@@ -114,6 +137,14 @@ struct ContentView: View {
         shouldWin = Bool.random()
         showingScore = false
     }
+    func playCorrectSound() {
+        AudioServicesPlaySystemSound(1025) // başarı sesi
+    }
+
+    func playWrongSound() {
+        AudioServicesPlaySystemSound(1053) // hata sesi
+    }
+
 }
 
 #Preview {
