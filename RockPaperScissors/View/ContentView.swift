@@ -5,9 +5,13 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-            LinearGradient(gradient: Gradient(colors: [.indigo, .blue, .mint]), startPoint: .topLeading, endPoint: .bottomTrailing)
-                .ignoresSafeArea()
-
+            LinearGradient(
+                gradient: Gradient(colors: [.indigo, .blue, .mint]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+            
             VStack(spacing: 30) {
                 Spacer()
                 
@@ -59,7 +63,7 @@ struct ContentView: View {
                         }
                     }
                 }
-
+                
                 Spacer()
                 
                 Text("Score: \(viewModel.score)")
@@ -68,15 +72,15 @@ struct ContentView: View {
                     .padding(.bottom)
             }
             .padding()
-            .alert("Game Over", isPresented: $viewModel.showingScore) {
-                Button("Play Again", action: viewModel.resetGame)
-            } message: {
-                if let result = viewModel.result {
-                    Text("\(result.message)\nScore: \(result.score)")
-                } else {
-                    Text("Score: \(viewModel.score)")
+            
+            if viewModel.showingScore, let result = viewModel.result {
+                ResultView(result: result) {
+                    viewModel.resetGame()
                 }
+                .transition(.scale.combined(with: .opacity))
+                .zIndex(1)
             }
         }
+        .animation(.easeInOut, value: viewModel.showingScore)
     }
 }
